@@ -10,10 +10,6 @@ public class Quadrant extends JPanel {
     private int number;
     private List<Cell> cells;
 
-    private List<Quadrant> quadrantsOnTheSameColumn;
-
-    private List<Quadrant> quadrantsOnTheSameRow;
-
     public Quadrant(int number) {
         this.number = number;
         this.cells = new ArrayList<>();
@@ -57,22 +53,6 @@ public class Quadrant extends JPanel {
 
     public void setCells(List<Cell> cells) {
         this.cells = cells;
-    }
-
-    public List<Quadrant> getQuadrantsOnTheSameColumn() {
-        return quadrantsOnTheSameColumn;
-    }
-
-    public void setQuadrantsOnTheSameColumn(List<Quadrant> quadrantsOnTheSameColumn) {
-        this.quadrantsOnTheSameColumn = quadrantsOnTheSameColumn;
-    }
-
-    public List<Quadrant> getQuadrantsOnTheSameRow() {
-        return quadrantsOnTheSameRow;
-    }
-
-    public void setQuadrantsOnTheSameRow(List<Quadrant> quadrantsOnTheSameRow) {
-        this.quadrantsOnTheSameRow = quadrantsOnTheSameRow;
     }
 
     public Runnable addHighlightOnQuadrant() {

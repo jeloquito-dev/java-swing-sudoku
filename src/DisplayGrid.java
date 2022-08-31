@@ -3,8 +3,6 @@ import java.awt.*;
 
 public class DisplayGrid extends JPanel {
 
-    static Cell activeCell;
-
     public DisplayGrid() {
 
         createNumberButtons();
@@ -52,9 +50,8 @@ public class DisplayGrid extends JPanel {
     }
 
     private void updateActiveCell(String text) {
-        activeCell.setText(String.valueOf(text));
-        activeCell = new Cell("", 0, 0);
+        SudokuGrid.activeCell.setText(String.valueOf(text));
+        SudokuGrid.activeCell = new Cell("", 0, 0);
     }
-
 
 }
