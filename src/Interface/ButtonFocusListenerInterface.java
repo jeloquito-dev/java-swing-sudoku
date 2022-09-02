@@ -1,7 +1,9 @@
+package Interface;
+
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-interface ButtonFocusListenerInterface extends FocusListener {
+public interface ButtonFocusListenerInterface extends FocusListener {
 
     void removeFocus(FocusEvent e);
 

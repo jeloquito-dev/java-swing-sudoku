@@ -1,3 +1,4 @@
+package Interface;
 
 @FunctionalInterface
 public interface IdentifierInterface<T> {

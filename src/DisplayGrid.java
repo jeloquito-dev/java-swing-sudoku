@@ -50,8 +50,10 @@ public class DisplayGrid extends JPanel {
     }
 
     private void updateActiveCell(String text) {
-        SudokuGrid.activeCell.setText(String.valueOf(text));
-        SudokuGrid.activeCell = new Cell("", 0, 0);
+        if(SudokuGrid.activeCell.isModifiable()) {
+            SudokuGrid.activeCell.setText(String.valueOf(text));
+            SudokuGrid.activeCell = new Cell("", 0, 0);
+        }
     }
 
 }

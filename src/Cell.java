@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
+import java.awt.font.TextAttribute;
+import java.util.Map;
 
 public class Cell extends JButton {
 
@@ -8,10 +9,13 @@ public class Cell extends JButton {
     private int column;
     private String value;
 
+    private boolean isModifiable;
+
     public Cell(String value, int row, int column) {
         this.row = row;
         this.column = column;
-        this.value = value;
+        this.isModifiable = value.equalsIgnoreCase("0");
+        this.value = (this.isModifiable) ? "" : value;
 
         setProperties();
     }
@@ -19,7 +23,17 @@ public class Cell extends JButton {
     private void setProperties() {
         this.setText(this.value);
         this.setBackground(Color.WHITE);
-        this.setFont(new Font("Arial", Font.BOLD, 18));
+
+        Font font = new Font("Arial", Font.BOLD, 18);
+
+        if (this.isModifiable) {
+            this.setFont(font);
+        } else {
+            Map attributes = font.getAttributes();
+            attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+            this.setFont(font.deriveFont(attributes));
+        }
+
         this.setBorder(BorderFactory.createEmptyBorder());
     }
 
@@ -51,6 +65,9 @@ public class Cell extends JButton {
         return column;
     }
 
+    public boolean isModifiable() {
+        return isModifiable;
+    }
 }
 
 
