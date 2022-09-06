@@ -34,8 +34,10 @@ public class Main {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(new Panel(), BorderLayout.NORTH);
-        panel.add(new SudokuGrid(test1), BorderLayout.CENTER);
-        panel.add(new DisplayGrid(), BorderLayout.SOUTH);
+
+        SudokuGrid sudokuGrid = new SudokuGrid(test1);
+        panel.add(sudokuGrid, BorderLayout.CENTER);
+        panel.add(new DisplayGrid(sudokuGrid), BorderLayout.SOUTH);
 
         jFrame.add(panel);
         jFrame.setSize(600, 600);

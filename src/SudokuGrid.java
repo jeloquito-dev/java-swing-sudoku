@@ -4,16 +4,19 @@ import Enums.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.security.cert.PolicyQualifierInfo;
 import java.util.*;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class SudokuGrid extends JPanel {
 
-    static Cell activeCell;
-    List<Quadrant> quadrants;
-    HashMap<Integer, List<Quadrant>> rowGroupings = new HashMap<>();
-    HashMap<Integer, List<Quadrant>> columnGroupings = new HashMap<>();
+    private Cell activeCell;
+    private List<Quadrant> quadrants;
+    private HashMap<Integer, List<Quadrant>> rowGroupings = new HashMap<>();
+    private HashMap<Integer, List<Quadrant>> columnGroupings = new HashMap<>();
 
     public SudokuGrid(int[][] integerArray) {
 
@@ -33,6 +36,7 @@ public class SudokuGrid extends JPanel {
         return new ArrayList<>() {{
             for (int number = 1; number <= 9; number++) {
                 Quadrant quadrant = new Quadrant(number);
+
                 addQuadrantToGroups(number, quadrant, quadrantGroups);
                 add(quadrant);
             }
@@ -40,6 +44,7 @@ public class SudokuGrid extends JPanel {
     }
 
     private void addQuadrantToGroups(int number, Quadrant quadrant, HashMap<String, List<Quadrant>> quadrantGroups) {
+
         List<Quadrant> rowGroup = getRowGroup(number, quadrantGroups);
         rowGroup.add(quadrant);
         this.rowGroupings.put(number, rowGroup);
@@ -98,7 +103,7 @@ public class SudokuGrid extends JPanel {
             }
         }
 
-        quadrants.forEach(this::add);
+        this.quadrants.forEach(this::add);
     }
 
     private void addToQuadrant(int x, int y, int value) {
@@ -111,6 +116,10 @@ public class SudokuGrid extends JPanel {
         quadrant.addCell(cell);
 
         addListeners(quadrant, cell);
+    }
+
+    public Quadrant getQuadrant(Cell cell) {
+        return identifyQuadrant(cell);
     }
 
     private Quadrant identifyQuadrant(Cell cell) {
@@ -167,6 +176,32 @@ public class SudokuGrid extends JPanel {
 
         rowGroupings.get(quadrant.getNumber()).forEach(q -> {
             q.getAllCellsInSameRow(cell.getRow()).forEach(consumer);
+        });
+    }
+
+    public Cell getActiveCell() {
+        return activeCell;
+    }
+
+    public List<Quadrant> getQuadrants() {
+        return this.quadrants;
+    }
+
+    public List<Quadrant> getColumnGroup(int number) {
+        return this.columnGroupings.get(number);
+    }
+
+    public List<Quadrant> getRowGroup(int number) {
+        return this.rowGroupings.get(number);
+    }
+
+    public void updateCellValue(int row, int column, String value) {
+        this.getQuadrants().forEach(quadrant -> {
+            quadrant.getCells().forEach(c -> {
+                if (c.getRow() == row && c.getColumn() == column) {
+                    c.setValue(value);
+                }
+            });
         });
     }
 

@@ -65,6 +65,15 @@ public class Cell extends JButton {
         return column;
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+        this.setText(this.value);
+    }
+
     public boolean isModifiable() {
         return isModifiable;
     }
