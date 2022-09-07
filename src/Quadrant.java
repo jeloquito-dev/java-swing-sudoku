@@ -23,11 +23,11 @@ public class Quadrant extends JPanel {
         this.add(cell);
     }
 
-    private void highlightAllCells() {
+    public void highlightAllCells() {
         cells.forEach(Cell::highlightBackground);
     }
 
-    private void removeHighlightOnAllCells() {
+    public void removeHighlightOnAllCells() {
         cells.forEach(Cell::removeHighlightedBackground);
     }
 
@@ -60,10 +60,4 @@ public class Quadrant extends JPanel {
         this.cells = cells;
     }
 
-    public Runnable addHighlightOnQuadrant() {
-        return this::highlightAllCells;
-    }
-    public Runnable removeHighlightOnQuadrant() {
-        return this::removeHighlightOnAllCells;
-    }
 }

@@ -12,8 +12,8 @@ public class PuzzleGrid extends JPanel {
 
     private Cell activeCell;
     private List<Quadrant> quadrants;
-    private HashMap<Integer, List<Quadrant>> rowGroupings = new HashMap<>();
-    private HashMap<Integer, List<Quadrant>> columnGroupings = new HashMap<>();
+    private static HashMap<Integer, List<Quadrant>> rowGroupings = new HashMap<>();
+    private static HashMap<Integer, List<Quadrant>> columnGroupings = new HashMap<>();
 
     public PuzzleGrid(int[][] integerArray) {
 
@@ -94,29 +94,32 @@ public class PuzzleGrid extends JPanel {
 
     private void construct(int[][] integerArray) {
 
-        for (int x = 0; x < 9; x++) {
-            for (int y = 0; y < 9; y++) {
-                addToQuadrant(x, y, integerArray[x][y]);
-            }
-        }
+        List<Integer> rows = Helper.integerList(1, 9);
+        List<Integer> columns = Helper.integerList(1, 9);
+
+        rows.forEach(row -> {
+            columns.forEach(column -> {
+                addToQuadrant(row, column, integerArray[row - 1][column - 1]);
+            });
+        });
+//        for (int x = 0; x < 9; x++) {
+//            for (int y = 0; y < 9; y++) {
+//
+//            }
+//        }
 
         this.quadrants.forEach(this::add);
     }
 
-    private void addToQuadrant(int x, int y, int value) {
-        int row = x + 1;
-        int column = y + 1;
+    private void addToQuadrant(int row, int column, int value) {
 
         String number = String.valueOf(value);
         Cell cell = new Cell(number, row, column);
+
         Quadrant quadrant = identifyQuadrant(cell);
         quadrant.addCell(cell);
 
         addListeners(quadrant, cell);
-    }
-
-    public Quadrant getQuadrant(Cell cell) {
-        return identifyQuadrant(cell);
     }
 
     private Quadrant identifyQuadrant(Cell cell) {
@@ -147,49 +150,52 @@ public class PuzzleGrid extends JPanel {
 
     private void addListeners(Quadrant quadrant, Cell cell) {
 
+        int row = cell.getRow();
+        int column = cell.getColumn();
+        int quadrantNumber = quadrant.getNumber();
+
         //Button Click Listener
         cell.addActionListener(e -> {
-            //Highlight
-            performAction(quadrant, cell, quadrant.addHighlightOnQuadrant(), Cell::highlightBackground);
+            //Highlight quadrant
+            quadrant.highlightAllCells();
+
+            //Highlight background on cells on the same column and row
+            Helper.applyToSameColumnAndRowCells(quadrantNumber, row, column, Cell::highlightBackground);
 
             cell.highlightSelected();
+            this.activeCell = cell;
 
-            activeCell = cell;
         });
 
         //Remove Focus Listener
         cell.addFocusListener((ButtonFocusListenerInterface) e-> {
-            performAction(quadrant, cell, quadrant.removeHighlightOnQuadrant(), Cell::removeHighlightedBackground);
+            //Remove highlight on all cells
+            quadrant.removeHighlightOnAllCells();
+
+            //Remove highlight background on cells on the same column and row
+            Helper.applyToSameColumnAndRowCells(quadrantNumber, row, column, Cell::removeHighlightedBackground);
         });
 
-    }
-
-    private void performAction(Quadrant quadrant, Cell cell, Runnable runnable, Consumer<Cell> consumer) {
-        runnable.run();
-
-        columnGroupings.get(quadrant.getNumber()).forEach(q -> {
-            q.getAllCellsInSameColumn(cell.getColumn()).forEach(consumer);
-        });
-
-        rowGroupings.get(quadrant.getNumber()).forEach(q -> {
-            q.getAllCellsInSameRow(cell.getRow()).forEach(consumer);
-        });
     }
 
     public Cell getActiveCell() {
         return activeCell;
     }
 
+    public Quadrant getQuadrant(Cell cell) {
+        return identifyQuadrant(cell);
+    }
+
     public List<Quadrant> getQuadrants() {
         return this.quadrants;
     }
 
-    public List<Quadrant> getColumnGroup(int number) {
-        return this.columnGroupings.get(number);
+    public static List<Quadrant> getColumnGroup(int number) {
+        return columnGroupings.get(number);
     }
 
-    public List<Quadrant> getRowGroup(int number) {
-        return this.rowGroupings.get(number);
+    public static List<Quadrant> getRowGroup(int number) {
+        return rowGroupings.get(number);
     }
 
     public void updateCellValue(int row, int column, String value) {
@@ -197,6 +203,7 @@ public class PuzzleGrid extends JPanel {
             quadrant.getCells().forEach(c -> {
                 if (c.getRow() == row && c.getColumn() == column) {
                     c.setValue(value);
+                    this.activeCell = new Cell("", 0, 0);
                 }
             });
         });

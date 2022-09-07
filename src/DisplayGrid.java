@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class DisplayGrid extends JPanel {
 
@@ -21,9 +19,8 @@ public class DisplayGrid extends JPanel {
     private void createButtons() {
 
         //Create an integer list from 1 to 10 then loop
-        IntStream.rangeClosed(1, 10).boxed().collect(Collectors.toList())
+        Helper.integerList(1, 10)
                 .forEach(number -> {
-
                     //1-9 as Number Buttons and 10 for Delete Button
                     String text = (number != 10) ? String.valueOf(number) : "X";
                     this.add(createButton(text));
@@ -98,13 +95,8 @@ public class DisplayGrid extends JPanel {
         //Highlights text of duplicate values within the quadrant
         applyToCells(quadrant.getCells(), highlightText);
 
-        //Highlights text of duplicate values within the same column
-        this.puzzleGrid.getColumnGroup(number)
-                .forEach(q -> applyToCells(q.getAllCellsInSameColumn(column), highlightText));
-
-        //Highlights text of duplicate values within the same row
-        this.puzzleGrid.getRowGroup(number)
-                .forEach(q -> applyToCells(q.getAllCellsInSameRow(row), highlightText));
+        //Highlights text of duplicate values within the same column and same row
+        Helper.applyToSameColumnAndRowCells(number, row, column, highlightText);
     }
 
     private void applyToCells(List<Cell> cells, Consumer<Cell> consumer) {
