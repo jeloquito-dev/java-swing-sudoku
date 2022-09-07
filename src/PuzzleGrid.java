@@ -4,21 +4,18 @@ import Enums.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.security.cert.PolicyQualifierInfo;
 import java.util.*;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public class SudokuGrid extends JPanel {
+public class PuzzleGrid extends JPanel {
 
     private Cell activeCell;
     private List<Quadrant> quadrants;
     private HashMap<Integer, List<Quadrant>> rowGroupings = new HashMap<>();
     private HashMap<Integer, List<Quadrant>> columnGroupings = new HashMap<>();
 
-    public SudokuGrid(int[][] integerArray) {
+    public PuzzleGrid(int[][] integerArray) {
 
         this.quadrants = initializeQuadrants();
         this.setLayout(new GridLayout(3,3, 2, 3));
@@ -204,5 +201,4 @@ public class SudokuGrid extends JPanel {
             });
         });
     }
-
 }

@@ -1,47 +1,34 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DisplayGrid extends JPanel {
 
-    private SudokuGrid sudokuGrid;
-    public DisplayGrid(SudokuGrid sudokuGrid) {
+    private PuzzleGrid puzzleGrid;
 
-        this.sudokuGrid = sudokuGrid;
-        createNumberButtons();
-        createDeleteButton();
+    public DisplayGrid(PuzzleGrid puzzleGrid) {
 
+        this.puzzleGrid = puzzleGrid;
         this.setLayout(new FlowLayout());
         this.setBackground(Color.WHITE);
+
+        createButtons();
     }
 
-    private void createNumberButtons() {
-        for(int number = 1; number <= 9; number++) {
-            JButton numberButton = createButton(String.valueOf(number));
+    private void createButtons() {
 
-            numberButton.setBackground(Color.WHITE);
-            numberButton.setFont(new Font("Arial", Font.BOLD, 18));
+        //Create an integer list from 1 to 10 then loop
+        IntStream.rangeClosed(1, 10).boxed().collect(Collectors.toList())
+                .forEach(number -> {
 
-            String value = String.valueOf(number);
+                    //1-9 as Number Buttons and 10 for Delete Button
+                    String text = (number != 10) ? String.valueOf(number) : "X";
+                    this.add(createButton(text));
 
-            numberButton.addActionListener(e -> {
-                updateActiveCell(value);
-            });
-
-            this.add(numberButton);
-        }
-    }
-
-    private void createDeleteButton() {
-        JButton deleteButton = createButton("X");
-
-        deleteButton.addActionListener(e -> {
-            updateActiveCell("");
-        });
-
-        this.add(deleteButton);
+                });
     }
 
     private JButton createButton(String text) {
@@ -51,38 +38,59 @@ public class DisplayGrid extends JPanel {
         button.setPreferredSize(new Dimension(50, 50));
         button.setFont(new Font("Arial", Font.BOLD, 18));
 
+        button.addActionListener(e -> {
+            if (text.equals("X")) {
+                updateActiveCell("");
+            } else {
+                updateActiveCell(text);
+            }
+        });
+
         return button;
     }
 
     private void updateActiveCell(String text) {
-        Cell currentCell = this.sudokuGrid.getActiveCell();
-        if(currentCell.isModifiable()) {
+        //Get current active cell and validate if it is modifiable
+        Cell currentCell = this.puzzleGrid.getActiveCell();
 
+        if (currentCell.isModifiable()) {
+            //Remove all highlighted text
             removeHighlightOnText();
 
-            String value = String.valueOf(text);
+            //Update the value of the cell
 
-            this.sudokuGrid.updateCellValue(currentCell.getRow(), currentCell.getColumn(), value);
+            int column = currentCell.getColumn();
+            int row = currentCell.getRow();
+            this.puzzleGrid.updateCellValue(row, column, text);
 
-            if (highlightTextOfDuplicateValues(currentCell, value)) {
-                currentCell.highlightText();
-            }
+            //Validate puzzle grid for duplicates
+            highlightOnTextOfDuplicateValues();
         }
     }
 
-    private boolean highlightTextOfDuplicateValues(Cell cell, String value) {
-        Quadrant quadrant = this.sudokuGrid.getQuadrant(cell);
+    private void highlightOnTextOfDuplicateValues() {
+        this.puzzleGrid.getQuadrants().forEach(q -> applyToCells(q.getCells(), this::checkDuplicateValuesForCell));
+    }
 
-        AtomicBoolean hasDuplicate = new AtomicBoolean(false);
+    private void removeHighlightOnText() {
+        this.puzzleGrid.getQuadrants().forEach(q -> applyToCells(q.getCells(), Cell::removeTextHighlight));
+    }
+
+    private void checkDuplicateValuesForCell(Cell cell) {
+
+        Quadrant quadrant = this.puzzleGrid.getQuadrant(cell);
+        String value = cell.getValue();
+
         int number = quadrant.getNumber();
         int column = cell.getColumn();
         int row = cell.getRow();
 
+        //Check if current cell is not equal to argument variable cell
+        //then validate if the value is duplicate and then highlight it
         Consumer<Cell> highlightText = c -> {
-            if (c.getValue().equalsIgnoreCase(value)) {
-                c.highlightText();
-                if (!hasDuplicate.get()) {
-                    hasDuplicate.set(true);
+            if (!cell.equals(c)) {
+                if (c.getValue().equalsIgnoreCase(value)) {
+                    c.highlightText();
                 }
             }
         };
@@ -91,18 +99,12 @@ public class DisplayGrid extends JPanel {
         applyToCells(quadrant.getCells(), highlightText);
 
         //Highlights text of duplicate values within the same column
-        this.sudokuGrid.getColumnGroup(number)
+        this.puzzleGrid.getColumnGroup(number)
                 .forEach(q -> applyToCells(q.getAllCellsInSameColumn(column), highlightText));
 
         //Highlights text of duplicate values within the same row
-        this.sudokuGrid.getRowGroup(number)
+        this.puzzleGrid.getRowGroup(number)
                 .forEach(q -> applyToCells(q.getAllCellsInSameRow(row), highlightText));
-
-        return hasDuplicate.get();
-    }
-
-    private void removeHighlightOnText() {
-        this.sudokuGrid.getQuadrants().forEach(q -> applyToCells(q.getCells(), Cell::removeTextHighlight));
     }
 
     private void applyToCells(List<Cell> cells, Consumer<Cell> consumer) {

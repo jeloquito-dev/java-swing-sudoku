@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class Main {
@@ -35,9 +34,9 @@ public class Main {
         panel.setLayout(new BorderLayout());
         panel.add(new Panel(), BorderLayout.NORTH);
 
-        SudokuGrid sudokuGrid = new SudokuGrid(test1);
-        panel.add(sudokuGrid, BorderLayout.CENTER);
-        panel.add(new DisplayGrid(sudokuGrid), BorderLayout.SOUTH);
+        PuzzleGrid puzzleGrid = new PuzzleGrid(test1);
+        panel.add(puzzleGrid, BorderLayout.CENTER);
+        panel.add(new DisplayGrid(puzzleGrid), BorderLayout.SOUTH);
 
         jFrame.add(panel);
         jFrame.setSize(600, 600);

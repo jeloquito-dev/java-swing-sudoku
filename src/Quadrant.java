@@ -31,12 +31,17 @@ public class Quadrant extends JPanel {
         cells.forEach(Cell::removeHighlightedBackground);
     }
 
+    /**
+     * Return a List of Cell objects with the same row number
+     * @param row
+     * @return
+     */
     public List<Cell> getAllCellsInSameRow(int row) {
-        return cells.stream().filter(r -> r.getRow() == row).collect(Collectors.toList());
+        return cells.stream().filter(cell -> cell.getRow() == row).collect(Collectors.toList());
     }
 
     public List<Cell> getAllCellsInSameColumn(int column) {
-        return cells.stream().filter(c -> c.getColumn() == column).collect(Collectors.toList());
+        return cells.stream().filter(cell -> cell.getColumn() == column).collect(Collectors.toList());
     }
 
     public int getNumber() {
